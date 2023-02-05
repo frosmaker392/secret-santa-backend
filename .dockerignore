@@ -5,3 +5,4 @@ node_modules
 .env.template
 .gitignore
 codegen.yml
+run_dev_db.sh
