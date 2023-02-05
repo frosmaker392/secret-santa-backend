@@ -1,6 +1,5 @@
 node_modules
 dist
-db_data
 
 .env
 run_dev_db.sh
