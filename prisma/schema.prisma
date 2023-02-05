@@ -1,0 +1,102 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @db.Uuid @default(uuid())
+  username      String    @unique @db.VarChar(32)
+  email         String    @unique
+  name          String?   @db.VarChar(64)
+  avatar        Bytes
+  passwordHash  String
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @default(now())
+
+  groups                Group[]
+  wishlists             Wishlist[]
+  invites               Invite[]
+  drawnNamesAsGifter    DrawnName[] @relation(name: "gifter")
+  drawnNamesAsRecipient DrawnName[] @relation(name: "recipient")
+}
+
+model Group {
+  id            String    @id @db.Uuid @default(uuid())
+  name          String    @db.VarChar(64)
+  exchangeDate  DateTime
+  budget        String
+  description   String?
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @default(now())
+
+  owner         User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId       String    @db.Uuid
+
+  wishlists     Wishlist[]
+  invites       Invite[]
+  drawnNames    DrawnName[]
+}
+
+model Wishlist {
+  id            String    @id @db.Uuid @default(uuid())
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @default(now())
+
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String    @db.Uuid
+  group         Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId       String    @db.Uuid
+
+  entries WishlistEntry[]
+
+  @@unique([userId, groupId])
+}
+
+model WishlistEntry {
+  id          String    @id @db.Uuid @default(uuid())
+  name        String    @db.VarChar(64)
+  image       Bytes?
+  description String?
+  order       Int
+
+  wishlist    Wishlist  @relation(fields: [wishlistId], references: [id], onDelete: Cascade)
+  wishlistId  String    @db.Uuid
+}
+
+model Invite {
+  id          String    @id @db.Uuid @default(uuid())
+
+  createdAt   DateTime  @default(now())
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String    @db.Uuid
+  group       Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId     String    @db.Uuid
+
+  @@unique([userId, groupId])
+}
+
+model DrawnName {
+  id          String    @id @db.Uuid @default(uuid())
+
+  createdAt   DateTime  @default(now())
+  
+  gifter      User      @relation(name: "gifter", fields: [gifterId], references: [id], onDelete: Cascade)
+  gifterId    String    @db.Uuid
+  recipient   User      @relation(name: "recipient", fields: [recipientId], references: [id], onDelete: Cascade)
+  recipientId String    @db.Uuid
+  group       Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId     String    @db.Uuid
+
+  @@unique([gifterId, recipientId, groupId])
+}

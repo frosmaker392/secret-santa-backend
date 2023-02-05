@@ -1,0 +1,33 @@
+{
+  "name": "secret-santa-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "build": "npx tsc",
+    "start": "node dist/index.js",
+    "dev": "concurrently \"npx tsc --watch\" \"nodemon dist/index.js\"",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "generate": "graphql-codegen"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@apollo/server": "^4.3.2",
+    "@types/node": "^18.11.18",
+    "dotenv": "^16.0.3",
+    "graphql": "^16.6.0",
+    "prisma": "^4.9.0",
+    "typescript": "^4.9.4"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.12",
+    "@graphql-codegen/cli": "^3.0.0",
+    "@graphql-codegen/typescript": "^3.0.0",
+    "@graphql-codegen/typescript-resolvers": "^3.0.0",
+    "concurrently": "^7.6.0",
+    "nodemon": "^2.0.20"
+  }
+}

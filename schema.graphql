@@ -1,0 +1,8 @@
+type Test {
+  id: Int!
+  message: String!
+}
+
+type Query {
+  helloWorld: Test!
+}
