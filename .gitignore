@@ -1,5 +1,8 @@
+# Generated folders
+coverage
 node_modules
 dist
 
+# Local dev files
 .env
 run_dev_db.sh
