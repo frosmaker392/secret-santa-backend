@@ -4,7 +4,7 @@ import PrismaDao from './PrismaDao'
 import { type UserForm } from './UserDao'
 import type UserDao from './UserDao'
 
-export default class UserPrismaDao extends PrismaDao<User> implements UserDao {
+export default class UserPrismaDao extends PrismaDao implements UserDao {
   async create(userForm: UserForm): Promise<User> {
     return await this.prismaClient.user.create({
       data: userForm
@@ -12,14 +12,26 @@ export default class UserPrismaDao extends PrismaDao<User> implements UserDao {
   }
 
   async getById(id: string): Promise<Optional<User>> {
-    return await this.getUniqueBy('user', 'id', id)
+    return await this.defaultToUndefined(
+      this.prismaClient.user.findUnique({
+        where: { id }
+      })
+    )
   }
 
   async getByEmail(email: string): Promise<Optional<User>> {
-    return await this.getUniqueBy('user', 'email', email)
+    return await this.defaultToUndefined(
+      this.prismaClient.user.findUnique({
+        where: { email }
+      })
+    )
   }
 
   async getByUsername(username: string): Promise<Optional<User>> {
-    return await this.getUniqueBy('user', 'username', username)
+    return await this.defaultToUndefined(
+      this.prismaClient.user.findUnique({
+        where: { username }
+      })
+    )
   }
 }
