@@ -1,7 +1,7 @@
 import { type PrismaClient } from '@prisma/client'
 import { type Optional } from '../types'
 
-export default abstract class PrismaDao {
+export abstract class PrismaDao {
   constructor(protected prismaClient: PrismaClient) {}
 
   protected defaultToUndefined = async <T>(

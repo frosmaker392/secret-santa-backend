@@ -6,3 +6,4 @@ dist
 # Local dev files
 .env
 run_dev_db.sh
+testScript.ts

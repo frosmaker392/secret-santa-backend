@@ -1,6 +1,6 @@
 import { describe, expect, test } from '@jest/globals'
 
-import PrismaDao from '../../src/daos/PrismaDao'
+import { PrismaDao } from '../../src/daos/PrismaDao'
 import { type PrismaClient } from '@prisma/client'
 import { type Optional } from '../../src/types'
 
