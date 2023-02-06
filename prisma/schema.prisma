@@ -15,7 +15,6 @@ model User {
   username      String    @unique @db.VarChar(32)
   email         String    @unique
   name          String?   @db.VarChar(64)
-  avatar        Bytes
   passwordHash  String
 
   createdAt     DateTime  @default(now())

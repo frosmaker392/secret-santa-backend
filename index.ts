@@ -1,22 +1,19 @@
 import { ApolloServer } from '@apollo/server'
 import { startStandaloneServer } from '@apollo/server/standalone'
 import { readFileSync } from 'fs'
-import { type Resolvers } from './generated/graphql'
 import dotenv from 'dotenv'
+import { DateTimeResolver } from 'graphql-scalars'
+
+import { type Resolvers } from './generated/graphql'
 
 dotenv.config()
 
 const typeDefs = readFileSync('./schema.graphql', 'utf-8')
 
 const resolvers: Resolvers = {
-  Query: {
-    helloWorld: () => {
-      return {
-        id: 5,
-        message: 'testing'
-      }
-    }
-  }
+  DateTime: DateTimeResolver,
+
+  Query: {}
 }
 
 const port = parseInt(process.env.PORT ?? '4000')

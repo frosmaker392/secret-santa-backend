@@ -11,6 +11,6 @@
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
-  "ignorePatterns": ["dist", "generated"],
+  "ignorePatterns": ["coverage", "dist", "generated"],
   "rules": {}
 }
