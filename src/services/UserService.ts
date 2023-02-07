@@ -1,10 +1,11 @@
-import { type User } from '@prisma/client'
 import {
   type UserCreateResult,
   type UserDao,
   type UserForm
 } from '../daos/UserDao'
+import { type PasswordHashUtil } from '../auth/PasswordHashUtil'
 import { type Optional } from '../types'
+import { type TokenUtil } from '../auth/TokenUtil'
 
 export interface RegisterForm extends Omit<UserForm, 'passwordHash'> {
   password: string
@@ -15,20 +16,19 @@ export interface LoginForm {
   password: string
 }
 
-type HashFunction = (password: string) => Promise<string>
-type HashCompareFunction = (
-  password: string,
-  passwordHash: string
-) => Promise<boolean>
+export interface LoginToken {
+  token: string
+}
 
-export default class UserService {
-  constructor(private readonly userDao: UserDao) {}
+export class UserService {
+  constructor(
+    private readonly userDao: UserDao,
+    private readonly hashUtil: PasswordHashUtil,
+    private readonly tokenUtil: TokenUtil
+  ) {}
 
-  register = async (
-    userForm: RegisterForm,
-    hashFunction: HashFunction
-  ): Promise<UserCreateResult> => {
-    const passwordHash = await hashFunction(userForm.password)
+  register = async (userForm: RegisterForm): Promise<UserCreateResult> => {
+    const passwordHash = await this.hashUtil.generate(userForm.password)
     const userDaoForm: UserForm = {
       ...userForm,
       passwordHash
@@ -36,10 +36,7 @@ export default class UserService {
     return await this.userDao.create(userDaoForm)
   }
 
-  login = async (
-    loginForm: LoginForm,
-    hashCompareFunction: HashCompareFunction
-  ): Promise<Optional<User>> => {
+  login = async (loginForm: LoginForm): Promise<Optional<LoginToken>> => {
     const { usernameOrEmail } = loginForm
     const [userByUsername, userByEmail] = await Promise.all([
       this.userDao.getByUsername(usernameOrEmail),
@@ -47,11 +44,15 @@ export default class UserService {
     ])
 
     const user = userByUsername ?? userByEmail
-    const validPassword = await hashCompareFunction(
+    const validPassword = await this.hashUtil.compare(
       loginForm.password,
       user?.passwordHash ?? ''
     )
 
-    return validPassword ? user : undefined
+    const token = await this.tokenUtil.generate({
+      userId: user?.id ?? ''
+    })
+
+    return validPassword ? { token } : undefined
   }
 }
