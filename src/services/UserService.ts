@@ -31,8 +31,9 @@ export class UserService {
 
   register = async (userForm: RegisterForm): Promise<RegisterResult> => {
     const passwordHash = await this.hashUtil.generate(userForm.password)
+    const { password: _, ...rest } = userForm
     const userDaoForm: UserForm = {
-      ...userForm,
+      ...rest,
       passwordHash
     }
     const createResult = await this.userDao.create(userDaoForm)

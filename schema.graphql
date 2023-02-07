@@ -1,5 +1,37 @@
 scalar DateTime
 
+# Input types
+
+input RegisterForm {
+  username: String!
+  email: String!
+  name: String
+  password: String!
+}
+
+input LoginForm {
+  usernameOrEmail: String!
+  password: String!
+}
+
+# Error types
+
+interface Error {
+  message: String!
+}
+
+type FieldError implements Error {
+  message: String!
+  name: String!
+}
+
+type ValidationError implements Error {
+  message: String!
+  fields: [FieldError!]!
+}
+
+# Model types
+
 type User {
   id: ID!
   username: String!
@@ -10,6 +42,30 @@ type User {
   updatedAt: DateTime!
 }
 
+# Auth types
+
+type RegisterPayload {
+  user: User!
+}
+
+type UserAlreadyExists {
+  existsOnFields: [String!]!
+}
+
+type LoginResult {
+  token: String
+  user: User
+}
+
+union RegisterResult = RegisterPayload | ValidationError | UserAlreadyExists
+
+# Queries and mutations
+
 type Query {
-  getUser: User!
+  hello: String!
+}
+
+type Mutation {
+  register(form: RegisterForm!): RegisterResult!
+  login(form: LoginForm!): LoginResult!
 }

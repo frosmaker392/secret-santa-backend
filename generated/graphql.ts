@@ -4,6 +4,7 @@ export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -14,10 +15,61 @@ export type Scalars = {
   DateTime: string;
 };
 
+export type Error = {
+  message: Scalars['String'];
+};
+
+export type FieldError = Error & {
+  __typename?: 'FieldError';
+  message: Scalars['String'];
+  name: Scalars['String'];
+};
+
+export type LoginForm = {
+  password: Scalars['String'];
+  usernameOrEmail: Scalars['String'];
+};
+
+export type LoginResult = {
+  __typename?: 'LoginResult';
+  token?: Maybe<Scalars['String']>;
+  user?: Maybe<User>;
+};
+
+export type Mutation = {
+  __typename?: 'Mutation';
+  login: LoginResult;
+  register: RegisterResult;
+};
+
+
+export type MutationLoginArgs = {
+  form: LoginForm;
+};
+
+
+export type MutationRegisterArgs = {
+  form: RegisterForm;
+};
+
 export type Query = {
   __typename?: 'Query';
-  getUser: User;
+  hello: Scalars['String'];
 };
+
+export type RegisterForm = {
+  email: Scalars['String'];
+  name?: InputMaybe<Scalars['String']>;
+  password: Scalars['String'];
+  username: Scalars['String'];
+};
+
+export type RegisterPayload = {
+  __typename?: 'RegisterPayload';
+  user: User;
+};
+
+export type RegisterResult = RegisterPayload | UserAlreadyExists | ValidationError;
 
 export type User = {
   __typename?: 'User';
@@ -27,6 +79,17 @@ export type User = {
   name?: Maybe<Scalars['String']>;
   updatedAt: Scalars['DateTime'];
   username: Scalars['String'];
+};
+
+export type UserAlreadyExists = {
+  __typename?: 'UserAlreadyExists';
+  existsOnFields: Array<Scalars['String']>;
+};
+
+export type ValidationError = Error & {
+  __typename?: 'ValidationError';
+  fields: Array<FieldError>;
+  message: Scalars['String'];
 };
 
 
@@ -100,28 +163,79 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']>;
+  Error: ResolversTypes['FieldError'] | ResolversTypes['ValidationError'];
+  FieldError: ResolverTypeWrapper<FieldError>;
   ID: ResolverTypeWrapper<Scalars['ID']>;
+  LoginForm: LoginForm;
+  LoginResult: ResolverTypeWrapper<LoginResult>;
+  Mutation: ResolverTypeWrapper<{}>;
   Query: ResolverTypeWrapper<{}>;
+  RegisterForm: RegisterForm;
+  RegisterPayload: ResolverTypeWrapper<RegisterPayload>;
+  RegisterResult: ResolversTypes['RegisterPayload'] | ResolversTypes['UserAlreadyExists'] | ResolversTypes['ValidationError'];
   String: ResolverTypeWrapper<Scalars['String']>;
   User: ResolverTypeWrapper<User>;
+  UserAlreadyExists: ResolverTypeWrapper<UserAlreadyExists>;
+  ValidationError: ResolverTypeWrapper<ValidationError>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
   Boolean: Scalars['Boolean'];
   DateTime: Scalars['DateTime'];
+  Error: ResolversParentTypes['FieldError'] | ResolversParentTypes['ValidationError'];
+  FieldError: FieldError;
   ID: Scalars['ID'];
+  LoginForm: LoginForm;
+  LoginResult: LoginResult;
+  Mutation: {};
   Query: {};
+  RegisterForm: RegisterForm;
+  RegisterPayload: RegisterPayload;
+  RegisterResult: ResolversParentTypes['RegisterPayload'] | ResolversParentTypes['UserAlreadyExists'] | ResolversParentTypes['ValidationError'];
   String: Scalars['String'];
   User: User;
+  UserAlreadyExists: UserAlreadyExists;
+  ValidationError: ValidationError;
 };
 
 export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['DateTime'], any> {
   name: 'DateTime';
 }
 
+export type ErrorResolvers<ContextType = any, ParentType extends ResolversParentTypes['Error'] = ResolversParentTypes['Error']> = {
+  __resolveType: TypeResolveFn<'FieldError' | 'ValidationError', ParentType, ContextType>;
+  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+};
+
+export type FieldErrorResolvers<ContextType = any, ParentType extends ResolversParentTypes['FieldError'] = ResolversParentTypes['FieldError']> = {
+  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type LoginResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['LoginResult'] = ResolversParentTypes['LoginResult']> = {
+  token?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  login?: Resolver<ResolversTypes['LoginResult'], ParentType, ContextType, RequireFields<MutationLoginArgs, 'form'>>;
+  register?: Resolver<ResolversTypes['RegisterResult'], ParentType, ContextType, RequireFields<MutationRegisterArgs, 'form'>>;
+};
+
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
-  getUser?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  hello?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+};
+
+export type RegisterPayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['RegisterPayload'] = ResolversParentTypes['RegisterPayload']> = {
+  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type RegisterResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['RegisterResult'] = ResolversParentTypes['RegisterResult']> = {
+  __resolveType: TypeResolveFn<'RegisterPayload' | 'UserAlreadyExists' | 'ValidationError', ParentType, ContextType>;
 };
 
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
@@ -134,9 +248,28 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type UserAlreadyExistsResolvers<ContextType = any, ParentType extends ResolversParentTypes['UserAlreadyExists'] = ResolversParentTypes['UserAlreadyExists']> = {
+  existsOnFields?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ValidationErrorResolvers<ContextType = any, ParentType extends ResolversParentTypes['ValidationError'] = ResolversParentTypes['ValidationError']> = {
+  fields?: Resolver<Array<ResolversTypes['FieldError']>, ParentType, ContextType>;
+  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type Resolvers<ContextType = any> = {
   DateTime?: GraphQLScalarType;
+  Error?: ErrorResolvers<ContextType>;
+  FieldError?: FieldErrorResolvers<ContextType>;
+  LoginResult?: LoginResultResolvers<ContextType>;
+  Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  RegisterPayload?: RegisterPayloadResolvers<ContextType>;
+  RegisterResult?: RegisterResultResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
+  UserAlreadyExists?: UserAlreadyExistsResolvers<ContextType>;
+  ValidationError?: ValidationErrorResolvers<ContextType>;
 };
 
