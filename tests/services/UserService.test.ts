@@ -11,9 +11,10 @@ import {
   type RegisterForm,
   UserService,
   type LoginForm,
-  type LoginToken
+  type LoginToken,
+  type RegisterResult
 } from '../../src/services/UserService'
-import { type Optional } from '../../src/types'
+import { type Ok, type Optional } from '../../src/types'
 
 const stub = (): never => {
   throw new Error('Not implemented!')
@@ -124,10 +125,18 @@ describe('UserService', () => {
       const result = await userService.register(registerForm)
 
       const expectedHash = await passwordHashUtil.generate('password')
-      const expected: UserCreateResult = await registerUserDao.create({
+      const createResult: RegisterResult = await registerUserDao.create({
         ...registerForm,
         passwordHash: expectedHash
       })
+
+      expect(result.ok).toBeTruthy()
+
+      const { passwordHash: _, ...user } = (createResult as Ok<User>).value
+      const expected = {
+        ok: true,
+        value: user
+      }
 
       expect(result).toEqual(expected)
     })

@@ -1,5 +1,5 @@
 import { describe, test, expect } from '@jest/globals'
-import { resultError, resultOk } from '../../src/utils/Result'
+import { mapResult, resultError, resultOk } from '../../src/utils/Result'
 
 const value = {
   id: 4,
@@ -22,6 +22,26 @@ describe('Result utils', () => {
     expect(resultError(error)).toEqual({
       ok: false,
       error
+    })
+  })
+
+  describe('mapResult', () => {
+    const mapper = (from: string): number => from.length
+
+    test('returns ok result with mapped value', () => {
+      const value = 'test string'
+      const inputResult = resultOk(value)
+
+      expect(mapResult(inputResult, mapper)).toEqual({
+        ok: true,
+        value: mapper(value)
+      })
+    })
+
+    test('returns same error result', () => {
+      const inputResult = resultError(error)
+
+      expect(mapResult(inputResult, mapper)).toEqual(inputResult)
     })
   })
 })
