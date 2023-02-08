@@ -7,15 +7,14 @@ import {
   type UserDao,
   type UserForm
 } from '../../src/daos/UserDao'
+import { toUser } from '../../src/models/User'
 import {
   type RegisterForm,
   UserService,
   type LoginForm,
-  type LoginPayload,
-  type RegisterResult
+  type LoginPayload
 } from '../../src/services/UserService'
 import { type Option } from '../../src/utils/Option'
-import { Ok } from '../../src/utils/Result'
 
 const stub = (): never => {
   throw new Error('Not implemented!')
@@ -50,6 +49,8 @@ const user: User = {
   createdAt: new Date(2022, 0, 1),
   updatedAt: new Date(2022, 0, 1)
 }
+
+const userModel = toUser(user)
 
 const registerForm: RegisterForm = {
   email: user.email,
@@ -125,18 +126,11 @@ describe('UserService', () => {
     test('returns result with user on success with hashed password', async () => {
       const result = await userService.register(registerForm)
 
-      const expectedHash = await passwordHashUtil.generate('password')
-      const createResult: RegisterResult = await registerUserDao.create({
-        ...registerForm,
-        passwordHash: expectedHash
-      })
-
       expect(result.ok).toBeTruthy()
 
-      const { passwordHash: _, ...user } = (createResult as Ok<User>).value
       const expected = {
         ok: true,
-        value: user
+        value: userModel
       }
 
       expect(result).toEqual(expected)
@@ -167,7 +161,8 @@ describe('UserService', () => {
     const loginTest = async (form: LoginForm): Promise<void> => {
       const result = await userService.login(form)
       const expected: LoginPayload = {
-        token: await tokenUtil.generate({ userId: user.id })
+        token: await tokenUtil.generate({ userId: user.id }),
+        user: toUser(user)
       }
 
       expect(result).toEqual(expected)

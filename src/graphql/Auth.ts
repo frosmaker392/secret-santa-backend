@@ -103,13 +103,9 @@ export const AuthMutation = extendType({
       },
       resolve: async (_, { form }, context) => {
         const result = await context.services.user.login(form)
-        if (result !== undefined) {
-          return {
-            token: result.token
-          }
+        return {
+          ...result
         }
-
-        return {}
       }
     })
   }

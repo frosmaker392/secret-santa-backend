@@ -5,6 +5,7 @@ import { type User } from '@prisma/client'
 import { type NotUniqueError } from '../errors/NotUniqueError'
 import { mapResult, type Result } from '../utils/Result'
 import { mapOption, type Option } from '../utils/Option'
+import { toUser } from '../models/User'
 
 export interface RegisterForm extends Omit<UserForm, 'passwordHash'> {
   password: string
@@ -39,10 +40,7 @@ export class UserService {
     }
     const createResult = await this.userDao.create(userDaoForm)
 
-    return mapResult(createResult, user => {
-      const { passwordHash: _, ...model } = user
-      return model
-    })
+    return mapResult(createResult, prismaUser => toUser(prismaUser))
   }
 
   login = async (loginForm: LoginForm): Promise<Option<LoginPayload>> => {
@@ -65,7 +63,7 @@ export class UserService {
     if (validPassword)
       return mapOption(user, user => ({
         token,
-        user
+        user: toUser(user)
       }))
   }
 }

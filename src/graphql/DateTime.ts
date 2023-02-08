@@ -1,4 +1,3 @@
-import { DateTimeResolver } from 'graphql-scalars'
-import { scalarType } from 'nexus'
+import { GraphQLDateTime } from 'graphql-scalars'
 
-export const DateTime = scalarType(DateTimeResolver)
+export const DateTime = GraphQLDateTime
