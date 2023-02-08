@@ -33,9 +33,6 @@ specifiers:
 dependencies:
   '@apollo/server': 4.3.2_graphql@16.6.0
   '@prisma/client': 4.9.0_prisma@4.9.0
-  '@types/bcrypt': 5.0.0
-  '@types/jsonwebtoken': 9.0.1
-  '@types/node': 18.11.18
   bcrypt: 5.1.0
   dotenv: 16.0.3
   graphql: 16.6.0
@@ -47,6 +44,9 @@ dependencies:
 devDependencies:
   '@babel/core': 7.20.12
   '@jest/globals': 29.4.1
+  '@types/bcrypt': 5.0.0
+  '@types/jsonwebtoken': 9.0.1
+  '@types/node': 18.11.18
   '@typescript-eslint/eslint-plugin': 5.50.0_ce5y2gf7dcf2syqm3ypo44ata4
   '@typescript-eslint/parser': 5.50.0_zkdaqh7it7uc4cvz2haft7rc6u
   eslint: 8.33.0
@@ -1116,7 +1116,7 @@ packages:
     resolution: {integrity: sha512-agtcFKaruL8TmcvqbndlqHPSJgsolhf/qPWchFlgnW1gECTN/nKbFcoFnvKAQRFfKbh+BO6A3SWdJu9t+xF3Lw==}
     dependencies:
       '@types/node': 18.11.18
-    dev: false
+    dev: true
 
   /@types/body-parser/1.19.2:
     resolution: {integrity: sha512-ALYone6pm6QmwZoAgeyNksccT9Q4AWZQ6PvfwR37GT6r6FWUPguq6sUmNGSMV2Wr761oQoBxwGGa6DR5o1DC9g==}
@@ -1182,7 +1182,7 @@ packages:
     resolution: {integrity: sha512-c5ltxazpWabia/4UzhIoaDcIza4KViOQhdbjRlfcIGVnsE3c3brkz9Z+F/EeJIECOQP7W7US2hNE930cWWkPiw==}
     dependencies:
       '@types/node': 18.11.18
-    dev: false
+    dev: true
 
   /@types/long/4.0.2:
     resolution: {integrity: sha512-MqTGEo5bj5t157U6fA/BiDynNkn0YknVdh48CMPkTSpFTVmvao5UQmm7uEF6xBEo7qIMAlY/JSleYaE6VOdpaA==}
