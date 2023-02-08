@@ -1,4 +1,4 @@
-import { type Optional } from '../types'
+import { type Option } from '../utils/Option'
 
 export interface TokenContents {
   userId: string
@@ -6,5 +6,5 @@ export interface TokenContents {
 
 export interface TokenUtil {
   generate: (contents: TokenContents) => Promise<string>
-  verify: (token: string) => Promise<Optional<TokenContents>>
+  verify: (token: string) => Promise<Option<TokenContents>>
 }

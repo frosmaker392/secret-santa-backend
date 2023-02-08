@@ -11,10 +11,11 @@ import {
   type RegisterForm,
   UserService,
   type LoginForm,
-  type LoginToken,
+  type LoginPayload,
   type RegisterResult
 } from '../../src/services/UserService'
-import { type Ok, type Optional } from '../../src/types'
+import { type Option } from '../../src/utils/Option'
+import { Ok } from '../../src/utils/Result'
 
 const stub = (): never => {
   throw new Error('Not implemented!')
@@ -35,7 +36,7 @@ const tokenUtil: TokenUtil = {
   generate: async (contents: TokenContents): Promise<string> => {
     return contents.userId
   },
-  verify: async (token: string): Promise<Optional<TokenContents>> => {
+  verify: async (token: string): Promise<Option<TokenContents>> => {
     return { userId: token }
   }
 }
@@ -99,11 +100,11 @@ const failingRegisterUserDao: UserDao = {
 const loginUserDao: UserDao = {
   create: stub,
   getById: stub,
-  getByUsername: async (username: string): Promise<Optional<User>> => {
+  getByUsername: async (username: string): Promise<Option<User>> => {
     if (username === user.username) return user
     return undefined
   },
-  getByEmail: async (email: string): Promise<Optional<User>> => {
+  getByEmail: async (email: string): Promise<Option<User>> => {
     if (email === user.email) return user
     return undefined
   }
@@ -165,7 +166,7 @@ describe('UserService', () => {
 
     const loginTest = async (form: LoginForm): Promise<void> => {
       const result = await userService.login(form)
-      const expected: LoginToken = {
+      const expected: LoginPayload = {
         token: await tokenUtil.generate({ userId: user.id })
       }
 

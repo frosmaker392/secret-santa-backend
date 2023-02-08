@@ -2,10 +2,10 @@ import { describe, expect, test } from '@jest/globals'
 
 import { PrismaDao } from '../../src/daos/PrismaDao'
 import { type PrismaClient } from '@prisma/client'
-import { type Optional } from '../../src/types'
+import { type Option } from '../../src/utils/Option'
 
 class TestPrismaDao extends PrismaDao {
-  testFunction = async <T>(input: T | null): Promise<Optional<T>> => {
+  testFunction = async <T>(input: T | null): Promise<Option<T>> => {
     return await this.defaultToUndefined(Promise.resolve(input))
   }
 }

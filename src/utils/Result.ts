@@ -1,4 +1,12 @@
-import { type Result, type Err, type Ok } from '../types'
+export interface Ok<T> {
+  ok: true
+  value: T
+}
+export interface Err<E> {
+  ok: false
+  error: E
+}
+export type Result<T, E> = Ok<T> | Err<E>
 
 export const resultOk = <T>(value: T): Ok<T> => ({
   ok: true,

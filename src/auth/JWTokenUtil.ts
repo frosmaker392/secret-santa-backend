@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken'
-import { type Optional } from '../types'
+import { type Option } from '../utils/Option'
 import { type TokenContents, type TokenUtil } from './TokenUtil'
 
 export class JWTokenUtil implements TokenUtil {
@@ -9,7 +9,7 @@ export class JWTokenUtil implements TokenUtil {
     return jwt.sign(contents, this.secret)
   }
 
-  async verify(token: string): Promise<Optional<TokenContents>> {
+  async verify(token: string): Promise<Option<TokenContents>> {
     try {
       return jwt.verify(token, this.secret) as TokenContents
     } catch {

@@ -10,6 +10,6 @@
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
-  "ignorePatterns": ["coverage", "dist", "generated"],
+  "ignorePatterns": ["coverage", "dist", "generated", "nexus-typegen.ts"],
   "rules": {}
 }

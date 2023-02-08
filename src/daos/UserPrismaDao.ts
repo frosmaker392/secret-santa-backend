@@ -2,8 +2,8 @@ import { PrismaDao } from './PrismaDao'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime'
 import { resultError, resultOk } from '../utils/Result'
 import { type User } from '@prisma/client'
-import { type Optional } from '../types'
 import { type UserForm, type UserDao, type UserCreateResult } from './UserDao'
+import { type Option } from '../utils/Option'
 
 export class UserPrismaDao extends PrismaDao implements UserDao {
   async create(userForm: UserForm): Promise<UserCreateResult> {
@@ -30,7 +30,7 @@ export class UserPrismaDao extends PrismaDao implements UserDao {
     }
   }
 
-  async getById(id: string): Promise<Optional<User>> {
+  async getById(id: string): Promise<Option<User>> {
     return await this.defaultToUndefined(
       this.prismaClient.user.findUnique({
         where: { id }
@@ -38,7 +38,7 @@ export class UserPrismaDao extends PrismaDao implements UserDao {
     )
   }
 
-  async getByEmail(email: string): Promise<Optional<User>> {
+  async getByEmail(email: string): Promise<Option<User>> {
     return await this.defaultToUndefined(
       this.prismaClient.user.findUnique({
         where: { email }
@@ -46,7 +46,7 @@ export class UserPrismaDao extends PrismaDao implements UserDao {
     )
   }
 
-  async getByUsername(username: string): Promise<Optional<User>> {
+  async getByUsername(username: string): Promise<Option<User>> {
     return await this.defaultToUndefined(
       this.prismaClient.user.findUnique({
         where: { username }

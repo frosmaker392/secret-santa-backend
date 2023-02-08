@@ -1,10 +1,10 @@
 import { type UserDao, type UserForm } from '../daos/UserDao'
 import { type PasswordHashUtil } from '../auth/PasswordHashUtil'
-import { type Result, type Optional } from '../types'
 import { type TokenUtil } from '../auth/TokenUtil'
 import { type User } from '@prisma/client'
 import { type NotUniqueError } from '../errors/NotUniqueError'
-import { mapResult } from '../utils/Result'
+import { mapResult, type Result } from '../utils/Result'
+import { mapOption, type Option } from '../utils/Option'
 
 export interface RegisterForm extends Omit<UserForm, 'passwordHash'> {
   password: string
@@ -18,8 +18,9 @@ export interface LoginForm {
   password: string
 }
 
-export interface LoginToken {
+export interface LoginPayload {
   token: string
+  user: UserModel
 }
 
 export class UserService {
@@ -44,7 +45,7 @@ export class UserService {
     })
   }
 
-  login = async (loginForm: LoginForm): Promise<Optional<LoginToken>> => {
+  login = async (loginForm: LoginForm): Promise<Option<LoginPayload>> => {
     const { usernameOrEmail } = loginForm
     const [userByUsername, userByEmail] = await Promise.all([
       this.userDao.getByUsername(usernameOrEmail),
@@ -61,6 +62,10 @@ export class UserService {
       userId: user?.id ?? ''
     })
 
-    return validPassword ? { token } : undefined
+    if (validPassword)
+      return mapOption(user, user => ({
+        token,
+        user
+      }))
   }
 }
