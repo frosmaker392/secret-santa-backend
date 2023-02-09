@@ -16,7 +16,7 @@ export const ErrorNexus = interfaceType({
 export const FieldError = objectType({
   name: 'FieldError',
   definition(t) {
-    t.implements(ErrorNexus)
+    t.implements('Error')
     t.nonNull.string('name')
   }
 })
@@ -24,7 +24,7 @@ export const FieldError = objectType({
 export const ValidationError = objectType({
   name: 'ValidationError',
   definition(t) {
-    t.implements(ErrorNexus)
-    t.nonNull.list.nonNull.field('fields', { type: FieldError })
+    t.implements('Error')
+    t.nonNull.list.nonNull.field('fields', { type: 'FieldError' })
   }
 })

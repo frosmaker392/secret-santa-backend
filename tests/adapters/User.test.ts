@@ -1,16 +1,9 @@
 import { describe, expect, test } from '@jest/globals'
-import { toUser } from '../../src/models/User'
-import { type User as PUser } from '@prisma/client'
+import { toUser } from '../../src/adapters/User'
+import { type PrismaUser } from '../../src/types/User'
+import { mockUser } from '../testUtils'
 
-const user: PUser = {
-  id: 'test-id',
-  username: 'testUser',
-  email: 'testUser@test.com',
-  name: 'Test User',
-  passwordHash: 'test-pass-hash',
-  createdAt: new Date(2022, 1, 1),
-  updatedAt: new Date(2022, 1, 1)
-}
+const user: PrismaUser = mockUser()
 
 describe('User model', () => {
   describe('toUser', () => {

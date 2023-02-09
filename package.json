@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "commonjs",
   "scripts": {
-    "build": "tsc --skipLibCheck",
+    "build": "tsc --skipLibCheck -p tsconfig.prod.json",
     "start": "node dist/index.js",
     "dev": "ts-node-dev --ignore-watch tests --transpile-only --no-notify src/index.ts",
     "test": "jest",

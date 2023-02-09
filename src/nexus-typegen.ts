@@ -60,8 +60,9 @@ export interface NexusGenObjects {
     updatedAt: NexusGenScalars['DateTime']; // DateTime!
     username: string; // String!
   }
-  UserAlreadyExists: { // root type
+  UserAlreadyExistsError: { // root type
     existsOnFields: string[]; // [String!]!
+    message: string; // String!
   }
   ValidationError: { // root type
     fields: NexusGenRootTypes['FieldError'][]; // [FieldError!]!
@@ -70,11 +71,11 @@ export interface NexusGenObjects {
 }
 
 export interface NexusGenInterfaces {
-  Error: NexusGenRootTypes['FieldError'] | NexusGenRootTypes['ValidationError'];
+  Error: NexusGenRootTypes['FieldError'] | NexusGenRootTypes['UserAlreadyExistsError'] | NexusGenRootTypes['ValidationError'];
 }
 
 export interface NexusGenUnions {
-  RegisterResult: NexusGenRootTypes['RegisterPayload'] | NexusGenRootTypes['UserAlreadyExists'] | NexusGenRootTypes['ValidationError'];
+  RegisterResult: NexusGenRootTypes['RegisterPayload'] | NexusGenRootTypes['UserAlreadyExistsError'] | NexusGenRootTypes['ValidationError'];
 }
 
 export type NexusGenRootTypes = NexusGenInterfaces & NexusGenObjects & NexusGenUnions
@@ -108,8 +109,9 @@ export interface NexusGenFieldTypes {
     updatedAt: NexusGenScalars['DateTime']; // DateTime!
     username: string; // String!
   }
-  UserAlreadyExists: { // field return type
+  UserAlreadyExistsError: { // field return type
     existsOnFields: string[]; // [String!]!
+    message: string; // String!
   }
   ValidationError: { // field return type
     fields: NexusGenRootTypes['FieldError'][]; // [FieldError!]!
@@ -147,8 +149,9 @@ export interface NexusGenFieldTypeNames {
     updatedAt: 'DateTime'
     username: 'String'
   }
-  UserAlreadyExists: { // field return type name
+  UserAlreadyExistsError: { // field return type name
     existsOnFields: 'String'
+    message: 'String'
   }
   ValidationError: { // field return type name
     fields: 'FieldError'
@@ -171,12 +174,13 @@ export interface NexusGenArgTypes {
 }
 
 export interface NexusGenAbstractTypeMembers {
-  RegisterResult: "RegisterPayload" | "UserAlreadyExists" | "ValidationError"
-  Error: "FieldError" | "ValidationError"
+  RegisterResult: "RegisterPayload" | "UserAlreadyExistsError" | "ValidationError"
+  Error: "FieldError" | "UserAlreadyExistsError" | "ValidationError"
 }
 
 export interface NexusGenTypeInterfaces {
   FieldError: "Error"
+  UserAlreadyExistsError: "Error"
   ValidationError: "Error"
 }
 

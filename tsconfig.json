@@ -11,7 +11,5 @@
   },
   "ts-node": {
     "esm": true
-  },
-  "include": ["src"],
-  "exclude": ["tests"]
+  }
 }

@@ -1,18 +1,16 @@
 import { type UserDao, type UserForm } from '../daos/UserDao'
 import { type PasswordHashUtil } from '../auth/PasswordHashUtil'
 import { type TokenUtil } from '../auth/TokenUtil'
-import { type User } from '@prisma/client'
 import { type NotUniqueError } from '../errors/NotUniqueError'
 import { mapResult, type Result } from '../utils/Result'
 import { mapOption, type Option } from '../utils/Option'
-import { toUser } from '../models/User'
+import { toUser } from '../adapters/User'
+import { type PrismaUser, type User } from '../types/User'
 
 export interface RegisterForm extends Omit<UserForm, 'passwordHash'> {
   password: string
 }
-
-export type UserModel = Omit<User, 'passwordHash'>
-export type RegisterResult = Result<UserModel, NotUniqueError<User>>
+export type RegisterResult = Result<User, NotUniqueError<PrismaUser>>
 
 export interface LoginForm {
   usernameOrEmail: string
@@ -21,7 +19,7 @@ export interface LoginForm {
 
 export interface LoginPayload {
   token: string
-  user: UserModel
+  user: User
 }
 
 export class UserService {
@@ -31,13 +29,9 @@ export class UserService {
     private readonly tokenUtil: TokenUtil
   ) {}
 
-  register = async (userForm: RegisterForm): Promise<RegisterResult> => {
-    const passwordHash = await this.hashUtil.generate(userForm.password)
-    const { password: _, ...rest } = userForm
-    const userDaoForm: UserForm = {
-      ...rest,
-      passwordHash
-    }
+  register = async (registerForm: RegisterForm): Promise<RegisterResult> => {
+    const passwordHash = await this.hashUtil.generate(registerForm.password)
+    const { password: _, ...userDaoForm } = { ...registerForm, passwordHash }
     const createResult = await this.userDao.create(userDaoForm)
 
     return mapResult(createResult, prismaUser => toUser(prismaUser))

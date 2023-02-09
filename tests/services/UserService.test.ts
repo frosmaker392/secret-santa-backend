@@ -1,55 +1,26 @@
 import { beforeEach, describe, expect, test } from '@jest/globals'
 import { type User } from '@prisma/client'
 import { type PasswordHashUtil } from '../../src/auth/PasswordHashUtil'
-import { type TokenContents, type TokenUtil } from '../../src/auth/TokenUtil'
-import {
-  type UserCreateResult,
-  type UserDao,
-  type UserForm
-} from '../../src/daos/UserDao'
-import { toUser } from '../../src/models/User'
+import { type TokenUtil } from '../../src/auth/TokenUtil'
+import { type UserDao } from '../../src/daos/UserDao'
+import { toUser } from '../../src/adapters/User'
 import {
   type RegisterForm,
   UserService,
   type LoginForm,
   type LoginPayload
 } from '../../src/services/UserService'
-import { type Option } from '../../src/utils/Option'
+import {
+  mockPasswordHashUtil,
+  mockTokenUtil,
+  mockUser,
+  mockUserDao
+} from '../testUtils'
 
-const stub = (): never => {
-  throw new Error('Not implemented!')
-}
-const hashGen = (password: string): string =>
-  password.split('').reverse().join('')
+const passwordHashUtil: PasswordHashUtil = mockPasswordHashUtil()
+const tokenUtil: TokenUtil = mockTokenUtil()
 
-const passwordHashUtil: PasswordHashUtil = {
-  generate: async (password: string): Promise<string> => {
-    return hashGen(password)
-  },
-  compare: async (password: string, passwordHash: string): Promise<boolean> => {
-    return password === hashGen(passwordHash)
-  }
-}
-
-const tokenUtil: TokenUtil = {
-  generate: async (contents: TokenContents): Promise<string> => {
-    return contents.userId
-  },
-  verify: async (token: string): Promise<Option<TokenContents>> => {
-    return { userId: token }
-  }
-}
-
-const user: User = {
-  id: 'test-id',
-  username: 'testUser',
-  email: 'testUser@test.com',
-  name: 'Test User',
-  passwordHash: hashGen('password'),
-  createdAt: new Date(2022, 0, 1),
-  updatedAt: new Date(2022, 0, 1)
-}
-
+const user: User = mockUser()
 const userModel = toUser(user)
 
 const registerForm: RegisterForm = {
@@ -69,60 +40,16 @@ const loginFormWithEmail: LoginForm = {
   password: 'password'
 }
 
-const registerUserDao: UserDao = {
-  create: async (userForm: UserForm): Promise<UserCreateResult> => {
-    return {
-      ok: true,
-      value: {
-        ...user,
-        ...userForm
-      }
-    }
-  },
-  getById: stub,
-  getByEmail: stub,
-  getByUsername: stub
-}
-
-const failingRegisterUserDao: UserDao = {
-  create: async (): Promise<UserCreateResult> => {
-    return {
-      ok: false,
-      error: {
-        fields: ['email']
-      }
-    }
-  },
-  getById: stub,
-  getByEmail: stub,
-  getByUsername: stub
-}
-
-const loginUserDao: UserDao = {
-  create: stub,
-  getById: stub,
-  getByUsername: async (username: string): Promise<Option<User>> => {
-    if (username === user.username) return user
-    return undefined
-  },
-  getByEmail: async (email: string): Promise<Option<User>> => {
-    if (email === user.email) return user
-    return undefined
-  }
-}
+const userDao: UserDao = mockUserDao()
 
 let userService: UserService
 
 describe('UserService', () => {
-  describe('register', () => {
-    beforeEach(() => {
-      userService = new UserService(
-        registerUserDao,
-        passwordHashUtil,
-        tokenUtil
-      )
-    })
+  beforeEach(() => {
+    userService = new UserService(userDao, passwordHashUtil, tokenUtil)
+  })
 
+  describe('register', () => {
     test('returns result with user on success with hashed password', async () => {
       const result = await userService.register(registerForm)
 
@@ -137,27 +64,22 @@ describe('UserService', () => {
     })
 
     test('returns result with error on failure', async () => {
-      userService = new UserService(
-        failingRegisterUserDao,
-        passwordHashUtil,
-        tokenUtil
-      )
-
-      const result = await userService.register(registerForm)
-      const expected: UserCreateResult = await failingRegisterUserDao.create({
+      const result = await userService.register({
         ...registerForm,
-        passwordHash: ''
+        email: 'existingUser@test.com'
       })
+      const expected = {
+        ok: false,
+        error: {
+          fields: ['email']
+        }
+      }
 
       expect(result).toEqual(expected)
     })
   })
 
   describe('login', () => {
-    beforeEach(() => {
-      userService = new UserService(loginUserDao, passwordHashUtil, tokenUtil)
-    })
-
     const loginTest = async (form: LoginForm): Promise<void> => {
       const result = await userService.login(form)
       const expected: LoginPayload = {

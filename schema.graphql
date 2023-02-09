@@ -46,7 +46,7 @@ type RegisterPayload {
   user: User!
 }
 
-union RegisterResult = RegisterPayload | UserAlreadyExists | ValidationError
+union RegisterResult = RegisterPayload | UserAlreadyExistsError | ValidationError
 
 type User {
   createdAt: DateTime!
@@ -57,8 +57,9 @@ type User {
   username: String!
 }
 
-type UserAlreadyExists {
+type UserAlreadyExistsError implements Error {
   existsOnFields: [String!]!
+  message: String!
 }
 
 type ValidationError implements Error {
