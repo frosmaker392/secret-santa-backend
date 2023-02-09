@@ -1,4 +1,4 @@
-import { type UserService } from '../services/UserService'
+import { type AuthService } from '../services/AuthService'
 import {
   type GQLLoginForm,
   type GQLLoginResult,
@@ -8,9 +8,9 @@ import {
 
 export const register = async (
   form: GQLRegisterForm,
-  userService: UserService
+  authService: AuthService
 ): Promise<GQLRegisterResult> => {
-  const result = await userService.register({
+  const result = await authService.register({
     ...form,
     name: form.name ?? null
   })
@@ -25,7 +25,7 @@ export const register = async (
 
 export const login = async (
   form: GQLLoginForm,
-  userService: UserService
+  authService: AuthService
 ): Promise<GQLLoginResult> => {
-  return { ...(await userService.login(form)) }
+  return { ...(await authService.login(form)) }
 }

@@ -32,7 +32,7 @@ type Mutation {
 }
 
 type Query {
-  ok: Boolean!
+  getCurrentUser: User
 }
 
 input RegisterForm {

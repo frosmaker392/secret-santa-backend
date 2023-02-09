@@ -5,7 +5,7 @@ import {
 } from '../nexus-typegen'
 import { type Option } from '../utils/Option'
 import { type GQLUser } from './User'
-import { ReplaceOptional, type Replace } from './utils'
+import { type ReplaceOptional, type Replace } from './utils'
 
 export type GQLUserAlreadyExistsError =
   NexusGenObjects['UserAlreadyExistsError']

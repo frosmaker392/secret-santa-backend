@@ -1,7 +1,7 @@
 import { describe, expect, test } from '@jest/globals'
 import { toUser } from '../../src/adapters/User'
 import { login, register } from '../../src/resolvers/Auth'
-import { UserService } from '../../src/services/UserService'
+import { AuthService } from '../../src/services/AuthService'
 import {
   type GQLRegisterPayload,
   type GQLLoginForm,
@@ -20,7 +20,7 @@ const user = mockUser()
 const userModel = toUser(user)
 const password = 'password'
 
-const userService = new UserService(
+const authService = new AuthService(
   mockUserDao(),
   mockPasswordHashUtil(),
   mockTokenUtil()
@@ -47,12 +47,12 @@ const loginFormFailure: GQLLoginForm = {
   password
 }
 
-describe('Resolvers for User', () => {
+describe('Auth resolvers', () => {
   describe('register', () => {
     test('returns RegisterPayload on success', async () => {
       const result = (await register(
         registerFormSuccess,
-        userService
+        authService
       )) as GQLRegisterPayload
 
       expect('user' in result).toBeTruthy()
@@ -62,7 +62,7 @@ describe('Resolvers for User', () => {
     test('returns UserAlreadyExists', async () => {
       const result = (await register(
         registerFormFailure,
-        userService
+        authService
       )) as GQLUserAlreadyExistsError
 
       expect(result.message).toBeDefined()
@@ -73,7 +73,7 @@ describe('Resolvers for User', () => {
 
   describe('login', () => {
     test('returns LoginResult with user and token on success', async () => {
-      const result = await login(loginFormSuccess, userService)
+      const result = await login(loginFormSuccess, authService)
 
       const expected: GQLLoginResult = {
         user: userModel,
@@ -84,7 +84,7 @@ describe('Resolvers for User', () => {
     })
 
     test('returns empty object on failure', async () => {
-      const result = await login(loginFormFailure, userService)
+      const result = await login(loginFormFailure, authService)
 
       expect(result).toEqual({})
     })

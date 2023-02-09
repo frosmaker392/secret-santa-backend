@@ -73,7 +73,7 @@ export const AuthMutation = extendType({
         form: arg({ type: nonNull('RegisterForm') })
       },
       resolve: async (_, { form }, context: Context) => {
-        return await register(form, context.services.user)
+        return await register(form, context.services.auth)
       }
     })
 
@@ -83,7 +83,7 @@ export const AuthMutation = extendType({
         form: arg({ type: nonNull('LoginForm') })
       },
       resolve: async (_, { form }, context) => {
-        return await login(form, context.services.user)
+        return await login(form, context.services.auth)
       }
     })
   }

@@ -96,7 +96,7 @@ export interface NexusGenFieldTypes {
     register: NexusGenRootTypes['RegisterResult']; // RegisterResult!
   }
   Query: { // field return type
-    ok: boolean; // Boolean!
+    getCurrentUser: NexusGenRootTypes['User'] | null; // User
   }
   RegisterPayload: { // field return type
     user: NexusGenRootTypes['User']; // User!
@@ -136,7 +136,7 @@ export interface NexusGenFieldTypeNames {
     register: 'RegisterResult'
   }
   Query: { // field return type name
-    ok: 'Boolean'
+    getCurrentUser: 'User'
   }
   RegisterPayload: { // field return type name
     user: 'User'

@@ -1,6 +1,6 @@
 import { type PrismaUser } from '../src/types/User'
 import { type PasswordHashUtil } from '../src/auth/PasswordHashUtil'
-import { type TokenContents, type TokenUtil } from '../src/auth/TokenUtil'
+import { type TokenPayload, type TokenUtil } from '../src/auth/TokenUtil'
 import {
   type UserForm,
   type UserCreateResult,
@@ -25,11 +25,11 @@ export const mockPasswordHashUtil = (): PasswordHashUtil => ({
 })
 
 export const mockTokenUtil = (): TokenUtil => ({
-  generate: async (contents: TokenContents): Promise<string> => {
+  generate: async (contents: TokenPayload): Promise<string> => {
     return contents.userId
   },
-  verify: async (token: string): Promise<Option<TokenContents>> => {
-    return { userId: token }
+  verify: async (token: string): Promise<Option<TokenPayload>> => {
+    if (token === mockUser().id) return { userId: token }
   }
 })
 
