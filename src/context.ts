@@ -16,15 +16,6 @@ export interface Context {
   }
 }
 
-const prisma = new PrismaClient()
-const userDao = new UserPrismaDao(prisma)
-
-const hashUtil = new BcryptHashUtil()
-const tokenUtil = new JWTokenUtil('secret')
-
-const authService = new AuthService(userDao, hashUtil, tokenUtil)
-const userService = new UserService(userDao)
-
 const extractJWToken = (authHeader: Option<string>): Option<string> => {
   return mapOption(authHeader, header => {
     const matches = header.match(
@@ -45,13 +36,24 @@ export const extractUserId = async (
   )
 }
 
-export const contextFunction: ContextFunction<
+export const createContextFunction = (): ContextFunction<
   [StandaloneServerContextFunctionArgument],
   Context
-> = async ({ req }): Promise<Context> => ({
-  userId: await extractUserId(req.headers.authorization, authService),
-  services: {
-    auth: authService,
-    user: userService
-  }
-})
+> => {
+  const prisma = new PrismaClient()
+  const userDao = new UserPrismaDao(prisma)
+
+  const hashUtil = new BcryptHashUtil()
+  const tokenUtil = new JWTokenUtil('secret')
+
+  const authService = new AuthService(userDao, hashUtil, tokenUtil)
+  const userService = new UserService(userDao)
+
+  return async ({ req }): Promise<Context> => ({
+    userId: await extractUserId(req.headers.authorization, authService),
+    services: {
+      auth: authService,
+      user: userService
+    }
+  })
+}

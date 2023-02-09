@@ -1,6 +1,6 @@
 import { startStandaloneServer } from '@apollo/server/standalone'
 import dotenv from 'dotenv'
-import { contextFunction } from './context'
+import { createContextFunction } from './context'
 import { server } from './server'
 
 dotenv.config()
@@ -8,7 +8,7 @@ dotenv.config()
 const port = parseInt(process.env.PORT ?? '4000')
 
 startStandaloneServer(server, {
-  context: contextFunction,
+  context: createContextFunction(),
   listen: { port }
 })
   .then(({ url }) => {
