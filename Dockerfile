@@ -7,6 +7,7 @@ RUN npm install -g pnpm
 
 COPY . .
 RUN pnpm install --prod
+RUN npx prisma migrate deploy
 
 EXPOSE ${PORT}
 
